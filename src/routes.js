@@ -7,8 +7,6 @@ const CreateCourse = React.lazy(() =>
 const CourseDetail = React.lazy(() =>
   import("./components/courses/CourseDetail")
 );
-const CallVideo = React.lazy(() => import("./components/jitsi"));
-const Promotions = React.lazy(() => import("./components/promotion/Promotion"));
 const Profile = React.lazy(() => import("./components/profile/profile"));
 
 const routes = [
@@ -26,12 +24,6 @@ const routes = [
     exact: true,
     name: "Chi tiết khoá học",
     component: CourseDetail,
-  },
-  {
-    path: "/video-call/:roomId/:callerId/:receiverId",
-    exact: true,
-    name: "Jitsi",
-    component: CallVideo,
   },
   {
     path: "/user-profile",

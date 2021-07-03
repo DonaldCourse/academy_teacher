@@ -18,14 +18,18 @@ import {
 import PropTypes from "prop-types";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import ListLesson from "./ListLesson";
-import ListLessonSlide from "./ListLessonSlide";
-import ListVideo from "./ListVideo";
 
 TabCourseDetail.propTypes = {};
 
 function TabCourseDetail({ course }) {
   const match = useRouteMatch();
   const { params } = match;
+
+  const htmlDecode = input => {
+    var e = document.createElement('div');
+    e.innerHTML = input;
+    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+  }
 
   return (
     <div>
@@ -41,23 +45,20 @@ function TabCourseDetail({ course }) {
                   <CImg
                     fluid
                     thumbnail
-                    style={{ width: "100%", height: "50%" }}
+                    style={{ width: "100%" }}
                     src={course.avatar}
                   ></CImg>
                 </CCol>
                 <CCol md="8">
                   <CCardBody>
-                    <CCardTitle>{course.name}</CCardTitle>
-                    <CCardText>{course.description}</CCardText>
-                    <CCardText>{course.prerequisites}</CCardText>
+                    <CCardTitle>{course.title}</CCardTitle>
                     <CCardText>{course.overview}</CCardText>
-                    <CCardText>Level : {course.level}</CCardText>
+                    <div dangerouslySetInnerHTML={{ __html: htmlDecode(course.description) }} />
+                    <CCardText>Level : {course.minimum_skill}</CCardText>
                   </CCardBody>
                 </CCol>
               </CRow>
-              <ListLesson lessons={course.lessons}></ListLesson>
-              {course.lessons && course.lessons.length > 0 && <ListLessonSlide lessons={course.lessons && course.lessons.map(({ id, title }) => { return { value: id, label: title } })}></ListLessonSlide>}
-              {course.lessons && course.lessons.length > 0 && <ListVideo lessons={course.lessons && course.lessons.map(({ id, title }) => { return { value: id, label: title } })}></ListVideo>}
+              <ListLesson id={course._id}></ListLesson>
             </CCardBody>
           </CCard>
         </CCol>

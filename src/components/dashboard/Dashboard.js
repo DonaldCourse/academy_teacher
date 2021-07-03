@@ -15,19 +15,10 @@ import {
 import CIcon from "@coreui/icons-react";
 
 import MainChartExample from "../charts/MainChartExample.js";
-import { SocketContext } from "../../context/socket/socketContext.js";
 const WidgetsDropdown = lazy(() => import("../widgets/WidgetsDropdown.js"));
 const WidgetsBrand = lazy(() => import("../widgets/WidgetsBrand.js"));
 
 const Dashboard = () => {
-  const socker = useContext(SocketContext);
-
-  const socket = socker.socketTutor;
-
-  useEffect(() => {
-    socket.emit("status", { is_active: 1 });
-  }, []);
-
   return (
     <>
       <WidgetsDropdown />

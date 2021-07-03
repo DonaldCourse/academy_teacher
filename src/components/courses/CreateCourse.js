@@ -6,7 +6,6 @@ import { CCard, CCardBody, CCardHeader, CCol, CForm, CFormGroup, CRow, CInput, C
 import CIcon from '@coreui/icons-react';
 import swal from 'sweetalert';
 import lodash from 'lodash'
-import TabCreateCourse from './TabCreateCourse';
 import { Editor } from "react-draft-wysiwyg";
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { EditorState, convertToRaw } from 'draft-js';
@@ -17,7 +16,7 @@ import CurriculumService from '../../services/CurriculumService';
 import { useAuth } from '../../context/auth';
 
 // Spinner : Import
-import { css, jsx} from '@emotion/react'
+import { css, jsx } from '@emotion/react'
 import HashLoader from "react-spinners/HashLoader";
 
 const override = css`
@@ -33,6 +32,7 @@ CreateCourse.propTypes = {
 function CreateCourse(props) {
     const { register, errors, control, handleSubmit, reset } = useForm({});
     const [curriculums, setCurriculum] = useState([]);
+    const [description, setDescription] = useState(EditorState.createEmpty());
     const [loading, setLoading] = useState(false);
     const [color, setColor] = useState("#3c4b64");
     const { auth } = useAuth();
@@ -44,36 +44,33 @@ function CreateCourse(props) {
         setLoading(true);
         const course = pick(data, [
             'name',
-            'level',
+            'minimum_skill',
             'overview',
-            'prerequisites',
+            'description',
             'file',
-            'curriculums',
-            'description'
+            'categories',
         ]);
         const body = {
-            name: course.name,
-            level: parseInt(course.level),
+            title: course.name,
+            minimum_skill: course.minimum_skill,
             overview: course.overview,
-            prerequisites: course.prerequisites,
-            curriculumId: course.curriculums,
-            description: course.description,
+            categories_id: course.categories,
+            description: draftToHtml(convertToRaw(description.getCurrentContent())),
         }
         reset();
         createCourse(body, course.file)
     }
 
     const createCourse = async (body, file) => {
-        const formData = new FormData();
-        formData.append('files', file);
+        // const formData = new FormData();
+        // formData.append('files', file);
         try {
-            const result = await UploadFileCDNService.UploadFile(formData);
-            if (result.status == 201) {
-                body.avatar = result.data[0].url
-            }
-            console.log(result);
+            // const result = await UploadFileCDNService.UploadFile(formData);
+            // if (result.status == 201) {
+            //     body.avatar = result.data[0].url
+            // }
+            body.avatar = "https://www.cambly.com/fe/static/login_illustration_big.png"
             const data = await CourseServices.CreateCourse(body);
-
             if (data.status == 201) {
                 setLoading(false);
                 swal({ title: "Thành công", text: 'Tạo khoá học thành công !', icon: 'success', button: 'Đồng ý' })
@@ -92,14 +89,19 @@ function CreateCourse(props) {
         CurriculumService.GetCurriculumsTutor()
             .then(res => {
                 if (res.status == 200) {
-                    const newArray = res.data && res.data.map(({ id, title }) => {
-                        return { value: id, label: title }
+                    const newArray = res.data.data && res.data.data.map(({ _id, name }) => {
+                        return { value: _id, label: name }
                     });
                     setCurriculum(newArray);
                 }
             }).catch(err => {
 
             })
+    }
+
+    const onChangeDescription = state => {
+        console.log(state);
+        setDescription(state);
     }
 
     return (
@@ -141,8 +143,8 @@ function CreateCourse(props) {
                                             <CLabel htmlFor="select">Thuộc danh mục</CLabel>
                                             <Controller
                                                 control={control}
-                                                id="curriculums"
-                                                name="curriculums"
+                                                id="categories"
+                                                name="categories"
                                                 rules={{ required: true }}
                                                 defaultValue={curriculums.length > 0 ? curriculums[0].value : ''}
                                                 render={(props) => (
@@ -162,7 +164,7 @@ function CreateCourse(props) {
                                                 )}>
                                             </Controller>
                                             <CInvalidFeedback className="help-block">
-                                                {get(errors, `name.curriculums`, '')}
+                                                {get(errors, `name.categories`, '')}
                                             </CInvalidFeedback>
                                         </div>
 
@@ -170,23 +172,22 @@ function CreateCourse(props) {
                                             <CLabel htmlFor="select">Chọn level khoá học</CLabel>
                                             <Controller
                                                 control={control}
-                                                id="level"
-                                                name="level"
+                                                id="minimum_skill"
+                                                name="minimum_skill"
                                                 as={CSelect}
                                                 defaultValue={0}>
-                                                <option value={0}>any_level</option>
-                                                <option value={1}>beginner</option>
-                                                <option value={2}>intermediate</option>
-                                                <option value={3}>advance</option>
+                                                <option value={"beginner"}>beginner</option>
+                                                <option value={"intermediate"}>intermediate</option>
+                                                <option value={"advance"}>advance</option>
                                             </Controller>
                                         </div>
 
                                         <div className="mb-3">
-                                            <CLabel htmlFor="exampleFormControlInput1">Mô tả</CLabel>
+                                            <CLabel htmlFor="exampleFormControlInput1">Tổng quan</CLabel>
                                             <Controller
                                                 control={control}
-                                                id="description"
-                                                name="description"
+                                                id="overview"
+                                                name="overview"
                                                 render={({ onChange, value }) => (
                                                     <CTextarea
                                                         rows="5"
@@ -199,21 +200,15 @@ function CreateCourse(props) {
                                         </div>
 
                                         <div className="mb-3">
-                                            <CLabel htmlFor="select">Điều kiện tiên quyết</CLabel>
-                                            <Controller
-                                                control={control}
-                                                id="prerequisites"
-                                                name="prerequisites"
-                                                render={({ onChange, value }) => (
-                                                    <CTextarea
-                                                        rows="5"
-                                                        onChange={e => onChange(e.target.value)}
-                                                        value={value}
-                                                        invalid={!!errors.prerequisites}
-                                                    />
-                                                )}
-                                            />
+                                            <CLabel htmlFor="exampleFormControlInput1">Mô tả</CLabel>
+                                            <Editor
+                                                editorState={description}
+                                                wrapperClassName="description-edit"
+                                                editorClassName="description"
+                                                onEditorStateChange={onChangeDescription}>
+                                            </Editor>
                                         </div>
+
 
                                         <div className="mb-3" row>
                                             <CLabel htmlFor="select">Đặt ảnh đại diện</CLabel>
@@ -235,23 +230,6 @@ function CreateCourse(props) {
                                                 )}
                                             />
 
-                                        </div>
-
-                                        <div className="mb-3">
-                                            <CLabel htmlFor="exampleFormControlInput1">Tổng quan</CLabel>
-                                            <Controller
-                                                control={control}
-                                                id="overview"
-                                                name="overview"
-                                                render={({ onChange, value }) => (
-                                                    <CTextarea
-                                                        rows="50"
-                                                        onChange={e => onChange(e.target.value)}
-                                                        value={value}
-                                                        invalid={!!errors.description}
-                                                    />
-                                                )}
-                                            />
                                         </div>
                                     </CCol>
                                 </CRow>

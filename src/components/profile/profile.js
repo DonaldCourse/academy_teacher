@@ -52,10 +52,20 @@ function Profile(props) {
   const [isOpen, setOpen] = useState(false);
 
   useEffect(async () => {
-    const res = await AuthServices.getProfileTutor();
-    console.log(res.data);
-    setTutor(res.data);
+    getProfile();
   }, []);
+
+  const getProfile = async () => {
+    try {
+      const res = await AuthServices.getProfileTutor();
+      console.log(res);
+      if (res.status == 200) {
+        setTutor(res.data.data);
+      }
+    } catch (error) {
+
+    }
+  }
 
   const onSubmit = (data, e) => {
     const info = pick(data, [
@@ -140,22 +150,6 @@ function Profile(props) {
     }
   };
 
-  const showBang = () => {
-    if (!tutor.certificates) return;
-    const result = tutor.certificates.map((i) => {
-      return <p style={{ marginRight: 7, background: "#ffa" }}>{i.name}</p>;
-    });
-    return result;
-  };
-
-  const showTrinh = () => {
-    if (!tutor.languages) return;
-    const result = tutor.languages.map((i) => {
-      return <p style={{ marginRight: 7, background: "#ffa" }}>{i.name}</p>;
-    });
-    return result;
-  };
-
   return (
     <>
       <CRow style={{ display: "flex", justifyContent: "center" }}>
@@ -197,39 +191,10 @@ function Profile(props) {
                 </div>{" "}
                 <div style={{ display: "flex", flexDirection: "row" }}>
                   <p style={{ width: "30%" }} class="text-md-left">
-                    Chuyên môn:{" "}
-                  </p>
-
-                  {showTrinh()}
-                </div>
-                <div style={{ display: "flex", flexDirection: "row" }}>
-                  <p style={{ width: "30%" }} class="text-md-left">
                     Kinh nghiệm:{" "}
                   </p>
                   <p style={{ width: "70%" }} class="text-md-left">
-                    {tutor.experience}
-                  </p>
-                </div>
-                <div style={{ display: "flex", flexDirection: "row" }}>
-                  <p style={{ width: "30%" }} class="text-md-left">
-                    Bằng cấp:{" "}
-                  </p>
-                  {showBang()}
-                </div>
-                <div style={{ display: "flex", flexDirection: "row" }}>
-                  <p style={{ width: "30%" }} class="text-md-left">
-                    Giới thiệu:{" "}
-                  </p>
-                  <p style={{ width: "70%" }} class="text-md-left">
-                    {tutor.introduction}
-                  </p>
-                </div>
-                <div style={{ display: "flex", flexDirection: "row" }}>
-                  <p style={{ width: "30%" }} class="text-md-left">
-                    Mối quan tâm:{" "}
-                  </p>
-                  <p style={{ width: "70%" }} class="text-md-left">
-                    {tutor.interest}
+                    {tutor.professional_background}
                   </p>
                 </div>
               </div>

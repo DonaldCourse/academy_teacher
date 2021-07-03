@@ -11,7 +11,7 @@ const logout = () => {
 };
 
 const validateUser = () => {
-  return getAPI("/api/users/validate-user", {});
+  return getAPI("/api/auth/validate-user", {});
 };
 
 const registerTutor = (body) => {
@@ -19,11 +19,11 @@ const registerTutor = (body) => {
 };
 
 const UpdateProfileTutor = (body) => {
-  return putAPI("/api/tutors/profiles", body);
+  return putAPI("/api/teacher/profile", body);
 };
 
 const getProfileTutor = (body) => {
-  return getAPI("/api/tutors/profiles", body);
+  return getAPI("/api/teacher/profile", body);
 };
 
 export default {

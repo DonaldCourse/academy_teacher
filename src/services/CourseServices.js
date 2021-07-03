@@ -1,47 +1,47 @@
 import { postAPI, getAPI } from "./index";
 
 const CreateCourse = (data) => {
-  return postAPI("/api/tutors/courses", data);
+  return postAPI("/api/teacher/courses", data);
 };
 
 const GetAllCourse = () => {
-  return getAPI("/api/tutors/courses");
+  return getAPI("/api/teacher/courses");
 };
 
 const GetAllCourseOfTeacher = (page, limit) => {
-  return getAPI(`/api/tutors/courses?page=${page}&limit=${limit}`);
+  return getAPI(`/api/teacher/courses?page=${page}&limit=${limit}`);
 };
 
 const GetCourseDetailOfTeacher = (params) => {
-  return getAPI(`/api/tutors/courses/${params}`);
+  return getAPI(`/api/teacher/courses/${params}`);
 };
 
 const CreateLessonTitle = (params, data) => {
-  return postAPI(`api/tutors/courses/${params}/lessons`, data);
+  return postAPI(`api/teacher/courses/${params}/lessons`, data);
 };
 
 const GetLessonTitle = (params) => {
-  return getAPI(`api/tutors/courses/${params}/lessons`);
+  return getAPI(`api/teacher/courses/${params}/lessons`);
 };
 
 const CreateLessonSlide = (params, data) => {
-  return postAPI(`api/tutors/courses/${params}/lesson-slide`, data);
+  return postAPI(`api/teacher/courses/${params}/lesson-slide`, data);
 };
 
 const getLessonSlide = (params, data) => {
-  return getAPI(`api/tutors/lessons/${params}/lesson-slide`);
+  return getAPI(`api/teacher/lessons/${params}/lesson-slide`);
 };
 
 const CreateLessonVideo = (params, data) => {
-  return postAPI(`api/tutors/courses/${params}/lesson-video`, data);
+  return postAPI(`api/teacher/courses/${params}/lesson-video`, data);
 };
 
 const getLessonVideo = (params) => {
-  return getAPI(`api/tutors/lessons/${params}/lesson-video`);
+  return getAPI(`api/teacher/lessons/${params}/lesson-video`);
 };
 
 const ActionPublishCourse = (params, data) => {
-  return postAPI(`api/tutors/courses/${params}/published`, data)
+  return postAPI(`api/teacher/courses/${params}`, data)
 }
 
 export default {

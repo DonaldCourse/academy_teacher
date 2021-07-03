@@ -15,13 +15,6 @@ import store from "./reducer/store";
 import reportWebVitals from "./reportWebVitals";
 
 import { AuthProvider } from "./context/auth";
-import { SocketProvider } from "./context/socket";
-import {
-  socketCall,
-  socketChat,
-  socketTutor,
-  SocketContext,
-} from "./context/socket/socketContext";
 import theme from './theme';
 import { Globalstyled } from "./GlobalStyle";
 
@@ -34,12 +27,7 @@ ReactDOM.render(
       <BrowserRouter>
         <MuiThemeProvider theme={theme}>
           <AuthProvider persistKey="auth">
-            <SocketProvider>
-              <SocketContext.Provider
-                value={{ socketCall, socketChat, socketTutor }}>
                 <App />
-              </SocketContext.Provider>
-            </SocketProvider>
           </AuthProvider>
         </MuiThemeProvider>
       </BrowserRouter>

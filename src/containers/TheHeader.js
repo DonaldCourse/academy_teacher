@@ -24,20 +24,12 @@ import {
   TheHeaderDropdownNotif,
   TheHeaderDropdownTasks,
 } from "./index";
-import { ToggleListChat, resetNotificatiom } from "../reducer/messageSlide";
 import { setReponsive } from "../reducer/sidebarShowSlide";
-import ListChat from "../components/messenger/listChat";
-// import listChatting from "../components/messenger/chatWindow/components/listChating";
-import ChatWindow from "../components/messenger/chatWindow";
-import ListChatTing from "../components/messenger/chatWindow/components/listChating";
-import ReceiveCallLobby from "../components/jitsi/components/receiveCallLobby";
 import tingtong from '../assets/icons/tingtong_text.png'
 
 const TheHeader = () => {
   const dispatch = useDispatch();
   const sidebarShow = useSelector((state) => state.sidebarShow);
-  const { notification } = useSelector((state) => state.message);
-
   const toggleSidebar = () => {
     const val = [true, "responsive"].includes(sidebarShow)
       ? false
@@ -54,10 +46,6 @@ const TheHeader = () => {
 
   return (
     <>
-      <ListChat />
-      <ChatWindow />
-      <ListChatTing />
-      <ReceiveCallLobby />
       <CHeader withSubheader>
         <CToggler
           inHeader
@@ -82,35 +70,6 @@ const TheHeader = () => {
         <CHeaderNav className="px-3">
           {/* <TheHeaderDropdownNotif />
           <TheHeaderDropdownTasks /> */}
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              position: "relative",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <CIcon
-              onClick={() => {
-                dispatch(ToggleListChat());
-                dispatch(resetNotificatiom());
-              }}
-              name="cil-envelope-open"
-            />
-            {notification > 0 ? (
-              <CBadge
-                style={{ position: "absolute", top: 0, right: 0 }}
-                shape="pill"
-                color="danger"
-              >
-                {notification}
-              </CBadge>
-            ) : (
-              ""
-            )}
-          </div>
           <TheHeaderDropdown />
         </CHeaderNav>
 

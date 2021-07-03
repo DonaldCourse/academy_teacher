@@ -14,9 +14,7 @@ import {
 } from "@coreui/react";
 import PropTypes from "prop-types";
 import TabCourseDetail from "./TabCourseDetail";
-import TabCreateLessonTitle from "./TabCreateLessonTitle";
-import TabCreateLessonSlide from "./TabCreateLessonSlide";
-import TabCreateLessonVideo from "./TabCreateLessonVideo";
+import TabCreateLesson from "./TabCreateLesson";
 import CourseServices from "../../services/CourseServices";
 import { useRouteMatch } from "react-router-dom";
 import swal from 'sweetalert';
@@ -39,14 +37,6 @@ function CourseDetail(props) {
       name: "Tạo bài học",
       value: 2,
     },
-    {
-      name: "Tạo Slide bài học",
-      value: 3,
-    },
-    {
-      name: "Tạo video bài học",
-      value: 4
-    },
   ];
 
   useEffect(() => {
@@ -56,7 +46,7 @@ function CourseDetail(props) {
   const getCourseDetail = async () => {
     try {
       const res = await CourseServices.GetCourseDetailOfTeacher(params.courseId);
-      setCourse(res.data);
+      setCourse(res.data.data);
     } catch (error) {
       console.log(error);
     }
@@ -64,12 +54,11 @@ function CourseDetail(props) {
 
   const publishedCourse = async () => {
     const body = {
-      is_published: !course.isPublished,
-      courseID: params.courseId
+      is_published: !course.is_published,
     }
     try {
       const res = await CourseServices.ActionPublishCourse(params.courseId, body);
-      if (res.status == 201) {
+      if (res.status == 200) {
         window.location.reload();
       } else {
         swal({ title: "Lỗi", text: 'Published khoá học thất bại !', icon: 'error', button: 'Đồng ý' })
@@ -105,16 +94,13 @@ function CourseDetail(props) {
             color="primary"
             className="action"
             style={{ margin: '12px' }}>
-            <span>{course && course.isPublished ? "Unpublished" : "Published"}</span>
+            <span>{course && course.is_published ? "Unpublished" : "Published"}</span>
           </CButton>
         </CCard>
       </CCol>
       <CCol xs="9" md="9">
         {activeKey === 1 ? <TabCourseDetail course={course} /> : ""}
-        {activeKey === 2 ? <TabCreateLessonTitle /> : ""}
-        {activeKey === 3 ? <TabCreateLessonSlide /> : ""}
-        {activeKey === 4 ? <TabCreateLessonVideo /> : ""}
-
+        {activeKey === 2 ? <TabCreateLesson /> : ""}
       </CCol>
     </CRow>
   );

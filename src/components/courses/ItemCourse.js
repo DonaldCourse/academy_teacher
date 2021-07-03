@@ -28,14 +28,14 @@ function ItemCourse({ defaultValue }) {
           className="mb-2"
           style={{ width: "100%", maxHeight: "200px", height: "100%" }}
           src={defaultValue.avatar}
-          onClick={() => history.push(`/courses/${defaultValue.id}`)}
+          onClick={() => history.push(`/courses/${defaultValue._id}`)}
         ></CImg>
-        <CCardTitle className="title-class">{defaultValue.name}</CCardTitle>
+        <CCardTitle className="title-class">{defaultValue.title}</CCardTitle>
         <CCardText className="text-class">{defaultValue.overview}</CCardText>
       </CCardBody>
       <CCardFooter>
         <CLink
-          onClick={() => history.push(`/courses/${defaultValue.id}`)}
+          onClick={() => history.push(`/courses/${defaultValue._id}`)}
           target="_blank">
           Xem chi tiết
         </CLink>

@@ -36,9 +36,9 @@ const override = css`
     border-color: red;
 `;
 
-TabCreateLessonVideo.propTypes = {};
+TabCreateLesson.propTypes = {};
 
-function TabCreateLessonVideo(props, { defaultValue, onBack }) {
+function TabCreateLesson(props, { defaultValue, onBack }) {
   const { register, errors, control, handleSubmit, reset } = useForm({});
   const [lessons, setLessons] = useState({});
   const match = useRouteMatch();
@@ -67,47 +67,49 @@ function TabCreateLessonVideo(props, { defaultValue, onBack }) {
   const onSubmit = (data) => {
     setLoading(true);
     const lesson = pick(data, [
-      'lesson',
+      'title',
       'thumbnail',
       'video',
     ]);
     const body = {
-      lesson_id: lesson.lesson,
-      priority: 1,
+      title: lesson.title,
     }
-    console.log(lesson);
     createLessonSlide(body, lesson.thumbnail, lesson.video)
   }
 
   const createLessonSlide = async (body, thumbnail, video) => {
 
-    const formData = new FormData();
-    formData.append('files', thumbnail);
+    // const formData = new FormData();
+    // formData.append('files', thumbnail);
 
-    const formData1 = new FormData();
-    formData1.append('files', video);
+    // const formData1 = new FormData();
+    // formData1.append('files', video);
 
     try {
-      const [
-        { data: dataThumbnail, status: isSuccessThumbnail },
-        { data: dataVideo, status: isSuccessVideo }] = await Promise.all([UploadFileCDNService.UploadFile(formData), UploadFileCDNService.UploadFile(formData1)]);
-      if (isSuccessThumbnail == 201 && isSuccessVideo == 201) {
-        body.thumbnail_url = dataThumbnail[0].url
-        body.video_url = dataVideo[0].url
-
-        const data = await CourseServices.CreateLessonVideo(params.courseId, body);
+      // const [
+      //   { data: dataThumbnail, status: isSuccessThumbnail },
+      //   { data: dataVideo, status: isSuccessVideo }] = await Promise.all([UploadFileCDNService.UploadFile(formData), UploadFileCDNService.UploadFile(formData1)]);
+      // if (isSuccessThumbnail == 201 && isSuccessVideo == 201) {
+        // body.thumbnail = dataThumbnail[0].url
+        // body.video_url = dataVideo[0].url
+        body.thumbnail = "https://cdn.tingtong.xyz/2021/06/26/DSCF5955-bdcb643cc8.JPG"
+        body.video_url = "https://cdn.tingtong.xyz/2021/06/26/WhatisDocker-Easyway-598df23aae.mp4"
+        
+        const data = await CourseServices.CreateLessonTitle(params.courseId, body);
+        console.log(data);
         if (data.status == 201) {
           setLoading(false);
-          reset({ 'thumbnail': '', 'video': '', 'lesson': lessons ? lessons[0].value : '' })
+          reset({ 'thumbnail': '', 'video': '', 'title': '' })
           swal({ title: "Thành công", text: 'Tạo video bài học thành công !', icon: 'success', button: 'Đồng ý' })
           window.location.reload();
         } else {
           setLoading(false);
           swal({ title: "Lỗi", text: 'Tạo video bài học thất bại !', icon: 'error', button: 'Đồng ý' })
         }
-      }
+      // }
 
     } catch (error) {
+      console.log(error);
       setLoading(false);
       swal({ title: "Lỗi", text: 'Tạo video bài học thất bại !', icon: 'error', button: 'Đồng ý' })
     }
@@ -122,38 +124,29 @@ function TabCreateLessonVideo(props, { defaultValue, onBack }) {
         <CCol xs={12} md={12}>
           <CCard>
             <CCardHeader style={{ fontSize: "30px", textAlign: "center" }}>
-              Tạo Video bài học
+              Tạo bài học
             </CCardHeader>
             <CCardBody>
               <CForm>
                 <CRow>
                   <CCol>
                     <div className="mb-3">
-                      <CLabel htmlFor="select">Bài học</CLabel>
+                      <CLabel htmlFor="select">Tên bài học</CLabel>
                       <Controller
                         control={control}
-                        id="lesson"
-                        name="lesson"
-                        rules={{ required: true }}
-                        defaultValue={lessons.length > 0 ? lessons[0].value : ''}
-                        render={(props) => (
-                          <CSelect
-                            {...props}
-                            value={props.value}
-                            onChange={(e) => {
-                              props.onChange(e.target.value)
-                            }}
-                            invalid={!!errors.lesson}>
-                            {lessons && lessons.length > 0 && lessons.map(({ value, label }, index) => (
-                              <option key={index} value={value} label={label}>
-                                {label}
-                              </option>
-                            ))}
-                          </CSelect>
-                        )}>
-                      </Controller>
+                        id="title"
+                        name="title"
+                        rules={{ required: 'Vui lòng nhập tên khoá học !' }}
+                        render={({ onChange, value }) => (
+                          <CInput
+                            onChange={e => onChange(e.target.value)}
+                            value={value}
+                            invalid={!!errors.title}
+                          />
+                        )}
+                      />
                       <CInvalidFeedback className="help-block">
-                        {get(errors, `name.lesson`, '')}
+                        {get(errors, `name.title`, '')}
                       </CInvalidFeedback>
                     </div>
                     {/* ////////////////////////////////////////// */}
@@ -226,4 +219,4 @@ function TabCreateLessonVideo(props, { defaultValue, onBack }) {
   );
 }
 
-export default TabCreateLessonVideo;
+export default TabCreateLesson;
