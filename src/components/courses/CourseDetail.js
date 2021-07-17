@@ -16,12 +16,13 @@ import PropTypes from "prop-types";
 import TabCourseDetail from "./TabCourseDetail";
 import TabCreateLesson from "./TabCreateLesson";
 import CourseServices from "../../services/CourseServices";
-import { useRouteMatch } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import swal from 'sweetalert';
 
 CourseDetail.propTypes = {};
 
 function CourseDetail(props) {
+  const history = useHistory();
   const [activeKey, setActiveKey] = useState(1);
   const [course, setCourse] = useState({});
   const { params } = useRouteMatch();
@@ -95,6 +96,15 @@ function CourseDetail(props) {
             className="action"
             style={{ margin: '12px' }}>
             <span>{course && course.is_published ? "Unpublished" : "Published"}</span>
+          </CButton>
+          <CButton
+            onClick={() => history.push(`/courses/${params.courseId}/edit`)}
+            type="button"
+            size="sm-3"
+            color="primary"
+            className="action"
+            style={{ margin: '12px' }}>
+            <span>Chỉnh sửa</span>
           </CButton>
         </CCard>
       </CCol>

@@ -5,17 +5,22 @@ import { get, pick, startsWith, toInteger, toNumber } from 'lodash'
 import { CCard, CCardBody, CCardHeader, CCol, CForm, CFormGroup, CRow, CInput, CLabel, CInvalidFeedback, CTextarea, CSelect, CInputFile, CButton, CCardFooter, CNav, CNavLink, CNavItem, CTabContent, CTabPane, CCardText, CTabs } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import swal from 'sweetalert';
+import Swal from 'sweetalert2'
 import lodash from 'lodash'
+import { Editor } from "react-draft-wysiwyg";
+import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import { EditorState, convertToRaw, ContentState, convertFromRaw } from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 import UploadFileCDNService from '../../services/UploadFileCDNService';
 import CourseServices from '../../services/CourseServices';
 import CurriculumService from '../../services/CurriculumService';
 import { useAuth } from '../../context/auth';
-import TutorService from '../../services/TutorService';
-
 
 // Spinner : Import
 import { css, jsx } from '@emotion/react'
 import HashLoader from "react-spinners/HashLoader";
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const override = css`
     display: block;
@@ -23,76 +28,104 @@ const override = css`
     border-color: red;
 `;
 
-CreateCourse.propTypes = {
+EditCourse.propTypes = {
 
 };
 
-function CreateCourse(props) {
-    const { register, errors, control, handleSubmit, reset } = useForm({});
+function EditCourse(props) {
+    const { register, errors, control, handleSubmit, reset, setValue } = useForm({});
     const [curriculums, setCurriculum] = useState([]);
-    const [tutors, setTutors] = useState([]);
-    const { auth } = useAuth();
+    const [description, setDescription] = useState(EditorState.createEmpty());
     const [loading, setLoading] = useState(false);
     const [color, setColor] = useState("#3c4b64");
+    const { auth } = useAuth();
+    const { params } = useRouteMatch();
+    const history = useHistory();
     useEffect(() => {
         getCurriculum();
-        getTutor();
+        getCourseDetail();
     }, []);
+
+    const htmlDecode = input => {
+        var e = document.createElement('div');
+        e.innerHTML = input;
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
 
     const onSubmit = (data, e) => {
         setLoading(true);
         const course = pick(data, [
             'name',
-            'level',
+            'minimum_skill',
             'overview',
-            'prerequisites',
-            'file',
-            'curriculums',
             'description',
-            'tutor'
+            'file',
+            'categories',
         ]);
         const body = {
-            name: course.name,
-            level: parseInt(course.level),
+            title: course.name,
+            minimum_skill: course.minimum_skill,
             overview: course.overview,
-            prerequisites: course.prerequisites,
-            curriculumId: course.curriculums,
-            description: course.description,
-            tutorId: course.tutor
+            categories_id: course.categories,
+            description: draftToHtml(convertToRaw(description.getCurrentContent())),
         }
+        console.log(body);
         reset();
-        createCourse(body, course.file)
+        updateCourse(body, course.file)
     }
 
-    const createCourse = async (body, file) => {
-        const formData = new FormData();
-        formData.append('files', file);
-        try {
+    const updateCourse = async (body, file) => {
+        console.log(file);
+        if (file?.name) {
+            const formData = new FormData();
+            formData.append('files', file);
             const result = await UploadFileCDNService.UploadFile(formData);
             if (result.status == 201) {
                 body.avatar = result.data[0].url
             }
-            const data = await CourseServices.CreateCourse(body);
-            if (data.status == 201) {
+        }
+
+        try {
+            const data = await CourseServices.UpdateCourse(body, params.courseId);
+            if (data.status == 200) {
                 setLoading(false);
-                swal({ title: "Thành công", text: 'Tạo khoá học thành công !', icon: 'success', button: 'Đồng ý' })
-                window.location.reload();
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: 'Cập nhật khoá học thành công !!!',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(res => {
+                    history.replace(`/courses/${params.courseId}`);
+                })
             } else {
                 setLoading(false);
-                swal({ title: "Lỗi", text: 'Tạo khoá học thất bại !', icon: 'error', button: 'Đồng ý' })
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: 'Cập nhật khoá học thất bại !',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
             }
         } catch (error) {
             setLoading(false);
-            swal({ title: "Lỗi", text: 'Tạo khoá học thất bại !', icon: 'error', button: 'Đồng ý' })
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'Cập nhật khoá học thất bại !',
+                showConfirmButton: false,
+                timer: 1500
+            })
         }
     }
 
-    const getCurriculum = async () => {
+    const getCurriculum = () => {
         CurriculumService.GetCurriculumsTutor()
             .then(res => {
                 if (res.status == 200) {
-                    const newArray = res.data && res.data.map(({ id, title }) => {
-                        return { value: id, label: title }
+                    const newArray = res.data.data && res.data.data.map(({ _id, name }) => {
+                        return { value: _id, label: name }
                     });
                     setCurriculum(newArray);
                 }
@@ -101,17 +134,31 @@ function CreateCourse(props) {
             })
     }
 
-    const getTutor = async () => {
-        TutorService.GetAllTutorApproved().then(res => {
-            if (res.status == 200) {
-                const newArray = res.data.list && res.data.list.map(({ id, username }) => {
-                    return { value: id, label: username }
-                });
-                setTutors(newArray);
-            }
-        }).catch(err => {
+    const onChangeDescription = state => {
+        setDescription(state);
+    }
 
-        })
+
+    const getCourseDetail = async () => {
+        try {
+            const res = await CourseServices.GetCourseDetailOfTeacher(params.courseId);
+            console.log(res.data.data);
+            setValue("name", res.data.data.title);
+            setValue("categories", res.data.data.categories_id);
+            setValue("minimum_skill", res.data.data.minimum_skill);
+            setValue("overview", res.data.data.overview);
+            setValue("file", res.data.data.avatar);
+            const blocksFromHtml = htmlToDraft(htmlDecode(res.data.data.description));
+            const { contentBlocks, entityMap } = blocksFromHtml;
+            if (contentBlocks) {
+                const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+                const editorState = EditorState.createWithContent(contentState);
+                setDescription(editorState);
+            }
+            // setCourse(res.data.data);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
@@ -120,11 +167,10 @@ function CreateCourse(props) {
                 <HashLoader color={color} loading={loading} css={override} size={50} />
             </div>
             <CRow>
-
                 <CCol xs="12" md="12">
                     <CCard>
                         <CCardHeader style={{ 'fontSize': '30px', 'textAlign': 'center' }}>
-                            Tạo khoá học
+                            Chỉnh sửa khoá học
                         </CCardHeader>
                         <CCardBody>
                             <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">
@@ -154,8 +200,8 @@ function CreateCourse(props) {
                                             <CLabel htmlFor="select">Thuộc danh mục</CLabel>
                                             <Controller
                                                 control={control}
-                                                id="curriculums"
-                                                name="curriculums"
+                                                id="categories"
+                                                name="categories"
                                                 rules={{ required: true }}
                                                 defaultValue={curriculums.length > 0 ? curriculums[0].value : ''}
                                                 render={(props) => (
@@ -175,36 +221,7 @@ function CreateCourse(props) {
                                                 )}>
                                             </Controller>
                                             <CInvalidFeedback className="help-block">
-                                                {get(errors, `name.curriculums`, '')}
-                                            </CInvalidFeedback>
-                                        </div>
-
-                                        <div className="mb-3">
-                                            <CLabel htmlFor="select">Phân công cho giáo viên</CLabel>
-                                            <Controller
-                                                control={control}
-                                                id="tutor"
-                                                name="tutor"
-                                                rules={{ required: true }}
-                                                defaultValue={tutors.length > 0 ? tutors[0].value : ''}
-                                                render={(props) => (
-                                                    <CSelect
-                                                        {...props}
-                                                        value={props.value}
-                                                        onChange={(e) => {
-                                                            props.onChange(e.target.value)
-                                                        }}
-                                                        invalid={!!errors.curriculums}>
-                                                        {tutors && tutors.map(({ value, label }, index) => (
-                                                            <option key={index} value={value} label={label}>
-                                                                {label}
-                                                            </option>
-                                                        ))}
-                                                    </CSelect>
-                                                )}>
-                                            </Controller>
-                                            <CInvalidFeedback className="help-block">
-                                                {get(errors, `name.tutor`, '')}
+                                                {get(errors, `name.categories`, '')}
                                             </CInvalidFeedback>
                                         </div>
 
@@ -212,23 +229,22 @@ function CreateCourse(props) {
                                             <CLabel htmlFor="select">Chọn level khoá học</CLabel>
                                             <Controller
                                                 control={control}
-                                                id="level"
-                                                name="level"
+                                                id="minimum_skill"
+                                                name="minimum_skill"
                                                 as={CSelect}
                                                 defaultValue={0}>
-                                                <option value={0}>any_level</option>
-                                                <option value={1}>beginner</option>
-                                                <option value={2}>intermediate</option>
-                                                <option value={3}>advance</option>
+                                                <option value={"beginner"}>beginner</option>
+                                                <option value={"intermediate"}>intermediate</option>
+                                                <option value={"advanced"}>advanced</option>
                                             </Controller>
                                         </div>
 
                                         <div className="mb-3">
-                                            <CLabel htmlFor="exampleFormControlInput1">Mô tả</CLabel>
+                                            <CLabel htmlFor="exampleFormControlInput1">Tổng quan</CLabel>
                                             <Controller
                                                 control={control}
-                                                id="description"
-                                                name="description"
+                                                id="overview"
+                                                name="overview"
                                                 render={({ onChange, value }) => (
                                                     <CTextarea
                                                         rows="5"
@@ -241,21 +257,15 @@ function CreateCourse(props) {
                                         </div>
 
                                         <div className="mb-3">
-                                            <CLabel htmlFor="select">Điều kiện tiên quyết</CLabel>
-                                            <Controller
-                                                control={control}
-                                                id="prerequisites"
-                                                name="prerequisites"
-                                                render={({ onChange, value }) => (
-                                                    <CTextarea
-                                                        rows="5"
-                                                        onChange={e => onChange(e.target.value)}
-                                                        value={value}
-                                                        invalid={!!errors.prerequisites}
-                                                    />
-                                                )}
-                                            />
+                                            <CLabel htmlFor="exampleFormControlInput1">Mô tả</CLabel>
+                                            <Editor
+                                                editorState={description}
+                                                wrapperClassName="description-edit"
+                                                editorClassName="description"
+                                                onEditorStateChange={onChangeDescription}>
+                                            </Editor>
                                         </div>
+
 
                                         <div className="mb-3" row>
                                             <CLabel htmlFor="select">Đặt ảnh đại diện</CLabel>
@@ -268,32 +278,15 @@ function CreateCourse(props) {
                                                         <CCol xs="12">
                                                             <CInputFile onChange={e => {
                                                                 onChange(e.target.files[0]);
-                                                            }} custom id="custom-file-input" />
-                                                            <CLabel htmlFor="custom-file-input" variant="custom-file">
-                                                                {value ? value.name : 'Tải ảnh'}
+                                                            }} custom name="custom-file-input" name="file" id="custom-file-input" />
+                                                            <CLabel name="file" htmlFor="custom-file-input" variant="custom-file">
+                                                                {value ? (value?.name || value) : 'Tải ảnh'}
                                                             </CLabel>
                                                         </CCol>
                                                     </React.Fragment>
                                                 )}
                                             />
 
-                                        </div>
-
-                                        <div className="mb-3">
-                                            <CLabel htmlFor="exampleFormControlInput1">Tổng quan</CLabel>
-                                            <Controller
-                                                control={control}
-                                                id="overview"
-                                                name="overview"
-                                                render={({ onChange, value }) => (
-                                                    <CTextarea
-                                                        rows="50"
-                                                        onChange={e => onChange(e.target.value)}
-                                                        value={value}
-                                                        invalid={!!errors.description}
-                                                    />
-                                                )}
-                                            />
                                         </div>
                                     </CCol>
                                 </CRow>
@@ -311,4 +304,4 @@ function CreateCourse(props) {
     );
 }
 
-export default CreateCourse;
+export default EditCourse;

@@ -11,18 +11,14 @@ import CIcon from "@coreui/icons-react";
 import AuthServices from "../services/AuthServices";
 import { useHistory } from "react-router-dom";
 import { useAuth } from "../context/auth";
+import { useSelector } from "react-redux";
+import { Avatar } from "@material-ui/core";
 // import { set } from "core-js/core/dict";
 
 const TheHeaderDropdown = () => {
   const history = useHistory();
   const { auth, setAuth } = useAuth();
-  // const [tutor, setTutor] = useState({});
-
-  // useEffect(async () => {
-  //   const res = await AuthServices.getProfileTutor();
-  //   // console.log(res.data);
-  //   setTutor(res.data);
-  // }, []);
+  const userProfile = useSelector(state => state.authSlide.auth);
 
   const handleLogout = () => {
     try {
@@ -40,11 +36,7 @@ const TheHeaderDropdown = () => {
     <CDropdown inNav className="c-header-nav-items mx-2" direction="down">
       <CDropdownToggle className="c-header-nav-link" caret={false}>
         <div className="c-avatar">
-          <CImg
-            src={auth.avatar ? auth.avatar :'avatars/1.png'}
-            className="c-avatar-img"
-            alt=""
-          />
+          <Avatar src={userProfile.avatar}></Avatar>
         </div>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">

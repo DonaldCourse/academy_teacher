@@ -30,6 +30,7 @@ import tingtong from '../assets/icons/tingtong_text.png'
 const TheHeader = () => {
   const dispatch = useDispatch();
   const sidebarShow = useSelector((state) => state.sidebarShow);
+
   const toggleSidebar = () => {
     const val = [true, "responsive"].includes(sidebarShow)
       ? false

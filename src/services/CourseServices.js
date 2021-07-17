@@ -1,7 +1,11 @@
-import { postAPI, getAPI } from "./index";
+import { postAPI, getAPI, putAPI, delAPI } from "./index";
 
 const CreateCourse = (data) => {
   return postAPI("/api/teacher/courses", data);
+};
+
+const UpdateCourse = (data, params) => {
+  return putAPI(`/api/teacher/courses/${params}`, data);
 };
 
 const GetAllCourse = () => {
@@ -18,6 +22,14 @@ const GetCourseDetailOfTeacher = (params) => {
 
 const CreateLessonTitle = (params, data) => {
   return postAPI(`api/teacher/courses/${params}/lessons`, data);
+};
+
+const UpdateLesson = (params, lessonID, data) => {
+  return putAPI(`api/teacher/courses/${params}/lessons/${lessonID}`, data);
+};
+
+const DeleteLesson = (params, lessonID) => {
+  return delAPI(`api/teacher/courses/${params}/lessons/${lessonID}`);
 };
 
 const GetLessonTitle = (params) => {
@@ -46,9 +58,12 @@ const ActionPublishCourse = (params, data) => {
 
 export default {
   CreateCourse,
+  UpdateCourse,
   GetAllCourseOfTeacher,
   GetCourseDetailOfTeacher,
   CreateLessonTitle,
+  UpdateLesson,
+  DeleteLesson,
   CreateLessonSlide,
   CreateLessonVideo,
   GetLessonTitle,
