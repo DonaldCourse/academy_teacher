@@ -192,7 +192,7 @@ function EditCourse(props) {
                                                 )}
                                             />
                                             <CInvalidFeedback className="help-block">
-                                                {get(errors, `name.name`, '')}
+                                                {get(errors, `name.name.message`, '')}
                                             </CInvalidFeedback>
                                         </div>
 
@@ -221,7 +221,7 @@ function EditCourse(props) {
                                                 )}>
                                             </Controller>
                                             <CInvalidFeedback className="help-block">
-                                                {get(errors, `name.categories`, '')}
+                                                {get(errors, `name.categories.message`, '')}
                                             </CInvalidFeedback>
                                         </div>
 
