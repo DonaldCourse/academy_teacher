@@ -118,7 +118,7 @@ function Profile(props) {
     data.append("files", file);
     const results = await UploadFileCDNService.UploadFile(data);
     const body = {
-      avatar: results.data[0].url
+      avatar: results.data[0].path
     }
     updateUserProfile(body);
   }
@@ -151,7 +151,7 @@ function Profile(props) {
               <BigAvatar
                 $withBorder
                 alt="Avatar"
-                src={userProfile.avatar}
+                src={process.env.REACT_APP_BASE_URL_CDN + userProfile.avatar}
                 imgProps={{
                   style: {
                     maxHeight: "100%",

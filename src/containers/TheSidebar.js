@@ -22,8 +22,8 @@ import { setReponsive } from "../reducer/sidebarShowSlide";
 
 const TheSidebar = () => {
   const dispatch = useDispatch();
-  const show = useSelector((state) => state.sidebarShow);
-
+  const show = useSelector((state) => state.sidebarSlide.sidebarShow);
+  console.log(show);
   return (
     <CSidebar show={show} onShowChange={(val) => dispatch(setReponsive(val))}>
       <CSidebarBrand className="d-md-down-none" to="/">

@@ -94,7 +94,7 @@ function ListLesson({ id }) {
             formData.append('files', thumbnail);
             const result = await UploadFileCDNService.UploadFile(formData);
             if (result.status == 201) {
-                body.thumbnail = result.data[0].url
+                body.thumbnail = result.data[0].path
             }
         }
 
@@ -103,7 +103,7 @@ function ListLesson({ id }) {
             formData.append('files', video);
             const result = await UploadFileCDNService.UploadFile(formData);
             if (result.status == 201) {
-                body.video_url = result.data[0].url
+                body.video_url = result.data[0].path
             }
         }
 

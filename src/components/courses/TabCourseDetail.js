@@ -46,7 +46,7 @@ function TabCourseDetail({ course }) {
                     fluid
                     thumbnail
                     style={{ width: "100%" }}
-                    src={course.avatar}
+                    src={process.env.REACT_APP_BASE_URL_CDN + course.avatar}
                   ></CImg>
                 </CCol>
                 <CCol md="8">

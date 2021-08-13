@@ -27,7 +27,7 @@ function ItemCourse({ defaultValue }) {
           fluid
           className="mb-2"
           style={{ width: "100%", maxHeight: "200px", height: "100%" }}
-          src={defaultValue.avatar}
+          src={process.env.REACT_APP_BASE_URL_CDN + defaultValue.avatar}
           onClick={() => history.push(`/courses/${defaultValue._id}`)}
         ></CImg>
         <CCardTitle className="title-class">{defaultValue.title}</CCardTitle>

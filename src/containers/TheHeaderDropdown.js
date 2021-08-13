@@ -23,7 +23,7 @@ const TheHeaderDropdown = () => {
   const handleLogout = () => {
     try {
       AuthServices.logout().then((res) => {
-        if (res && res.status == 201) {
+        if (res && res.status == 200) {
           setAuth({});
           window.localStorage.removeItem("token");
           history.push("/login");
@@ -36,7 +36,7 @@ const TheHeaderDropdown = () => {
     <CDropdown inNav className="c-header-nav-items mx-2" direction="down">
       <CDropdownToggle className="c-header-nav-link" caret={false}>
         <div className="c-avatar">
-          <Avatar src={userProfile.avatar}></Avatar>
+          <Avatar src={process.env.REACT_APP_BASE_URL_CDN + userProfile.avatar}></Avatar>
         </div>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">

@@ -79,21 +79,19 @@ function TabCreateLesson(props, { defaultValue, onBack }) {
 
   const createLessonSlide = async (body, thumbnail, video) => {
 
-    // const formData = new FormData();
-    // formData.append('files', thumbnail);
+    const formData = new FormData();
+    formData.append('files', thumbnail);
 
-    // const formData1 = new FormData();
-    // formData1.append('files', video);
+    const formData1 = new FormData();
+    formData1.append('files', video);
 
     try {
-      // const [
-      //   { data: dataThumbnail, status: isSuccessThumbnail },
-      //   { data: dataVideo, status: isSuccessVideo }] = await Promise.all([UploadFileCDNService.UploadFile(formData), UploadFileCDNService.UploadFile(formData1)]);
-      // if (isSuccessThumbnail == 201 && isSuccessVideo == 201) {
-        // body.thumbnail = dataThumbnail[0].url
-        // body.video_url = dataVideo[0].url
-        body.thumbnail = "https://cdn.tingtong.xyz/2021/06/26/DSCF5955-bdcb643cc8.JPG"
-        body.video_url = "https://cdn.tingtong.xyz/2021/06/26/WhatisDocker-Easyway-598df23aae.mp4"
+      const [
+        { data: dataThumbnail, status: isSuccessThumbnail },
+        { data: dataVideo, status: isSuccessVideo }] = await Promise.all([UploadFileCDNService.UploadFile(formData), UploadFileCDNService.UploadFile(formData1)]);
+      if (isSuccessThumbnail == 201 && isSuccessVideo == 201) {
+        body.thumbnail = dataThumbnail[0].path
+        body.video_url = dataVideo[0].path
         
         const data = await CourseServices.CreateLessonTitle(params.courseId, body);
         console.log(data);
@@ -106,7 +104,7 @@ function TabCreateLesson(props, { defaultValue, onBack }) {
           setLoading(false);
           swal({ title: "Lỗi", text: 'Tạo video bài học thất bại !', icon: 'error', button: 'Đồng ý' })
         }
-      // }
+      }
 
     } catch (error) {
       console.log(error);

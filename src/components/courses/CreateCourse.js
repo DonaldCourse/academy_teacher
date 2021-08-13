@@ -62,14 +62,14 @@ function CreateCourse(props) {
     }
 
     const createCourse = async (body, file) => {
-        // const formData = new FormData();
-        // formData.append('files', file);
+        const formData = new FormData();
+        formData.append('files', file);
         try {
-            // const result = await UploadFileCDNService.UploadFile(formData);
-            // if (result.status == 201) {
-            //     body.avatar = result.data[0].url
-            // }
-            body.avatar = "https://www.cambly.com/fe/static/login_illustration_big.png"
+            const result = await UploadFileCDNService.UploadFile(formData);
+            if (result.status == 201) {
+                body.avatar = result.data[0].path
+            }
+            // body.avatar = "https://www.cambly.com/fe/static/login_illustration_big.png"
             const data = await CourseServices.CreateCourse(body);
             if (data.status == 201) {
                 setLoading(false);
@@ -175,10 +175,10 @@ function CreateCourse(props) {
                                                 id="minimum_skill"
                                                 name="minimum_skill"
                                                 as={CSelect}
-                                                defaultValue={0}>
+                                                defaultValue={"beginner"}>
                                                 <option value={"beginner"}>beginner</option>
                                                 <option value={"intermediate"}>intermediate</option>
-                                                <option value={"advance"}>advance</option>
+                                                <option value={"advanced"}>advance</option>
                                             </Controller>
                                         </div>
 

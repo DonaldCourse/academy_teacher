@@ -81,7 +81,7 @@ function EditCourse(props) {
             formData.append('files', file);
             const result = await UploadFileCDNService.UploadFile(formData);
             if (result.status == 201) {
-                body.avatar = result.data[0].url
+                body.avatar = result.data[0].path
             }
         }
 
@@ -166,140 +166,136 @@ function EditCourse(props) {
             <div className="backdrop" hidden={!loading}>
                 <HashLoader color={color} loading={loading} css={override} size={50} />
             </div>
-            <CRow>
-                <CCol xs="12" md="12">
-                    <CCard>
-                        <CCardHeader style={{ 'fontSize': '30px', 'textAlign': 'center' }}>
-                            Chỉnh sửa khoá học
-                        </CCardHeader>
-                        <CCardBody>
-                            <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">
-                                <CRow>
-                                    <CCol>
-                                        <div className="mb-3">
-                                            <CLabel htmlFor="exampleFormControlInput1">Tên khoá học</CLabel>
-                                            <Controller
-                                                control={control}
-                                                id="name"
-                                                name="name"
-                                                rules={{ required: 'Vui lòng nhập tên khoá học !' }}
-                                                render={({ onChange, value }) => (
-                                                    <CInput
-                                                        onChange={e => onChange(e.target.value)}
-                                                        value={value}
-                                                        invalid={!!errors.name}
-                                                    />
-                                                )}
+            <CCard>
+                <CCardHeader style={{ 'fontSize': '30px', 'textAlign': 'center' }}>
+                    Chỉnh sửa khoá học
+                </CCardHeader>
+                <CCardBody>
+                    <CForm action="" method="post" encType="multipart/form-data" className="form-horizontal">
+                        <CRow>
+                            <CCol>
+                                <div className="mb-3">
+                                    <CLabel htmlFor="exampleFormControlInput1">Tên khoá học</CLabel>
+                                    <Controller
+                                        control={control}
+                                        id="name"
+                                        name="name"
+                                        rules={{ required: 'Vui lòng nhập tên khoá học !' }}
+                                        render={({ onChange, value }) => (
+                                            <CInput
+                                                onChange={e => onChange(e.target.value)}
+                                                value={value}
+                                                invalid={!!errors.name}
                                             />
-                                            <CInvalidFeedback className="help-block">
-                                                {get(errors, `name.name.message`, '')}
-                                            </CInvalidFeedback>
-                                        </div>
+                                        )}
+                                    />
+                                    <CInvalidFeedback className="help-block">
+                                        {get(errors, `name.name.message`, '')}
+                                    </CInvalidFeedback>
+                                </div>
 
-                                        <div className="mb-3">
-                                            <CLabel htmlFor="select">Thuộc danh mục</CLabel>
-                                            <Controller
-                                                control={control}
-                                                id="categories"
-                                                name="categories"
-                                                rules={{ required: true }}
-                                                defaultValue={curriculums.length > 0 ? curriculums[0].value : ''}
-                                                render={(props) => (
-                                                    <CSelect
-                                                        {...props}
-                                                        value={props.value}
-                                                        onChange={(e) => {
-                                                            props.onChange(e.target.value)
-                                                        }}
-                                                        invalid={!!errors.curriculums}>
-                                                        {curriculums && curriculums.map(({ value, label }, index) => (
-                                                            <option key={index} value={value} label={label}>
-                                                                {label}
-                                                            </option>
-                                                        ))}
-                                                    </CSelect>
-                                                )}>
-                                            </Controller>
-                                            <CInvalidFeedback className="help-block">
-                                                {get(errors, `name.categories.message`, '')}
-                                            </CInvalidFeedback>
-                                        </div>
+                                <div className="mb-3">
+                                    <CLabel htmlFor="select">Thuộc danh mục</CLabel>
+                                    <Controller
+                                        control={control}
+                                        id="categories"
+                                        name="categories"
+                                        rules={{ required: true }}
+                                        defaultValue={curriculums.length > 0 ? curriculums[0].value : ''}
+                                        render={(props) => (
+                                            <CSelect
+                                                {...props}
+                                                value={props.value}
+                                                onChange={(e) => {
+                                                    props.onChange(e.target.value)
+                                                }}
+                                                invalid={!!errors.curriculums}>
+                                                {curriculums && curriculums.map(({ value, label }, index) => (
+                                                    <option key={index} value={value} label={label}>
+                                                        {label}
+                                                    </option>
+                                                ))}
+                                            </CSelect>
+                                        )}>
+                                    </Controller>
+                                    <CInvalidFeedback className="help-block">
+                                        {get(errors, `name.categories.message`, '')}
+                                    </CInvalidFeedback>
+                                </div>
 
-                                        <div className="mb-3">
-                                            <CLabel htmlFor="select">Chọn level khoá học</CLabel>
-                                            <Controller
-                                                control={control}
-                                                id="minimum_skill"
-                                                name="minimum_skill"
-                                                as={CSelect}
-                                                defaultValue={0}>
-                                                <option value={"beginner"}>beginner</option>
-                                                <option value={"intermediate"}>intermediate</option>
-                                                <option value={"advanced"}>advanced</option>
-                                            </Controller>
-                                        </div>
+                                <div className="mb-3">
+                                    <CLabel htmlFor="select">Chọn level khoá học</CLabel>
+                                    <Controller
+                                        control={control}
+                                        id="minimum_skill"
+                                        name="minimum_skill"
+                                        as={CSelect}
+                                        defaultValue={0}>
+                                        <option value={"beginner"}>beginner</option>
+                                        <option value={"intermediate"}>intermediate</option>
+                                        <option value={"advanced"}>advanced</option>
+                                    </Controller>
+                                </div>
 
-                                        <div className="mb-3">
-                                            <CLabel htmlFor="exampleFormControlInput1">Tổng quan</CLabel>
-                                            <Controller
-                                                control={control}
-                                                id="overview"
-                                                name="overview"
-                                                render={({ onChange, value }) => (
-                                                    <CTextarea
-                                                        rows="5"
-                                                        onChange={e => onChange(e.target.value)}
-                                                        value={value}
-                                                        invalid={!!errors.description}
-                                                    />
-                                                )}
+                                <div className="mb-3">
+                                    <CLabel htmlFor="exampleFormControlInput1">Tổng quan</CLabel>
+                                    <Controller
+                                        control={control}
+                                        id="overview"
+                                        name="overview"
+                                        render={({ onChange, value }) => (
+                                            <CTextarea
+                                                rows="5"
+                                                onChange={e => onChange(e.target.value)}
+                                                value={value}
+                                                invalid={!!errors.description}
                                             />
-                                        </div>
+                                        )}
+                                    />
+                                </div>
 
-                                        <div className="mb-3">
-                                            <CLabel htmlFor="exampleFormControlInput1">Mô tả</CLabel>
-                                            <Editor
-                                                editorState={description}
-                                                wrapperClassName="description-edit"
-                                                editorClassName="description"
-                                                onEditorStateChange={onChangeDescription}>
-                                            </Editor>
-                                        </div>
+                                <div className="mb-3">
+                                    <CLabel htmlFor="exampleFormControlInput1">Mô tả</CLabel>
+                                    <Editor
+                                        editorState={description}
+                                        wrapperClassName="description-edit"
+                                        editorClassName="description"
+                                        onEditorStateChange={onChangeDescription}>
+                                    </Editor>
+                                </div>
 
 
-                                        <div className="mb-3" row>
-                                            <CLabel htmlFor="select">Đặt ảnh đại diện</CLabel>
-                                            <Controller
-                                                control={control}
-                                                rules={{ required: 'Vui lòng thêm tệp dữ liệu' }}
-                                                name="file"
-                                                render={({ onChange, value }) => (
-                                                    <React.Fragment>
-                                                        <CCol xs="12">
-                                                            <CInputFile onChange={e => {
-                                                                onChange(e.target.files[0]);
-                                                            }} custom name="custom-file-input" name="file" id="custom-file-input" />
-                                                            <CLabel name="file" htmlFor="custom-file-input" variant="custom-file">
-                                                                {value ? (value?.name || value) : 'Tải ảnh'}
-                                                            </CLabel>
-                                                        </CCol>
-                                                    </React.Fragment>
-                                                )}
-                                            />
+                                <div className="mb-3" row>
+                                    <CLabel htmlFor="select">Đặt ảnh đại diện</CLabel>
+                                    <Controller
+                                        control={control}
+                                        rules={{ required: 'Vui lòng thêm tệp dữ liệu' }}
+                                        name="file"
+                                        render={({ onChange, value }) => (
+                                            <React.Fragment>
+                                                <CCol xs="12">
+                                                    <CInputFile onChange={e => {
+                                                        onChange(e.target.files[0]);
+                                                    }} custom name="custom-file-input" name="file" id="custom-file-input" />
+                                                    <CLabel name="file" htmlFor="custom-file-input" variant="custom-file">
+                                                        {value ? (value?.name || value) : 'Tải ảnh'}
+                                                    </CLabel>
+                                                </CCol>
+                                            </React.Fragment>
+                                        )}
+                                    />
 
-                                        </div>
-                                    </CCol>
-                                </CRow>
+                                </div>
 
-                            </CForm>
-                        </CCardBody>
+                            </CCol>
+                        </CRow>
+                    </CForm>
+                </CCardBody>
 
-                        <CCardFooter style={{ "textAlign": "right" }}>
-                            <CButton type="submit" onClick={handleSubmit(onSubmit)} size="sm" color="primary"><CIcon name="cil-scrubber" />Đăng ký</CButton>
-                        </CCardFooter>
-                    </CCard>
-                </CCol>
-            </CRow >
+                <CCardFooter style={{ "textAlign": "right" }}>
+                    <CButton type="submit" onClick={handleSubmit(onSubmit)} size="sm" color="primary"><CIcon name="cil-scrubber" />Đăng ký</CButton>
+                </CCardFooter>
+            </CCard>
         </div>
     );
 }
