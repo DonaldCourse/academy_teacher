@@ -1,18 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const sidebbarShow = createSlice({
+const sidebbarSlide = createSlice({
   name: "sidebarShow",
   initialState: {
     sidebarShow: "responsive",
   },
   reducers: {
     setReponsive: (state, action) => {
-      state = action.payload;
-      return state;
+      return {
+        ...state,
+        sidebarShow: action.payload
+      };
     },
   },
 });
 
-const { reducer, actions } = sidebbarShow;
+const { reducer, actions } = sidebbarSlide;
 export const { setReponsive } = actions;
 export default reducer;

@@ -1,9 +1,9 @@
 import { combineReducers } from "@reduxjs/toolkit";
-import sidebarShow from "./sidebarShowSlide";
+import sidebarSlide from "./sidebarShowSlide";
 import authSlide from './AuthSlide'
 
 const RootReducers = combineReducers({
-  sidebarShow,
+  sidebarSlide,
   authSlide
 });
 
