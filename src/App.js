@@ -39,5 +39,27 @@ function App(props) {
   );
 }
 
+const TheLayout = React.lazy(() => import('./containers/TheLayout'));
+
+function App(props) {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <React.Suspense fallback={loading}>
+        <Switch>
+          <PublicRouter exact path="/login" name="Login Page" component={Login} />
+          <PublicRouter exact path="/register" name="Register" component={Register} />
+          <ProtectRouter path="/" name="Home" component={TheLayout} />
+        </Switch>
+      </React.Suspense>
+    </BrowserRouter>
+  );
+}
+
 
 export default App;
